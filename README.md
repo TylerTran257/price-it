@@ -173,7 +173,8 @@ Environment variables (see `.env.example`):
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `ENVIRONMENT` | development | dev/staging/production |
-| `MLS_PROVIDER` | mock | mock or ntreis |
+| `MLS_PROVIDER` | mock | mock or corelogic |
+| `CORELOGIC_API_KEY` | - | CoreLogic Property API key |
 | `CACHE_TTL_SECONDS` | 86400 | Cache time-to-live |
 | `COMPS_RADIUS_MILES` | 1.0 | Default search radius |
 | `SOLD_LOOKBACK_DAYS` | 180 | Days to look back |
@@ -181,22 +182,40 @@ Environment variables (see `.env.example`):
 | `PRICE_PERCENTILE_HIGH` | 75 | Upper percentile |
 | `DISCORD_TOKEN` | - | Discord bot token |
 
-## 🔄 Switching to Real NTREIS API
+## 🔄 Data Source Integration
 
-When you have NTREIS credentials:
+### Research Findings
 
-1. Update `.env`:
-   ```
-   MLS_PROVIDER=ntreis
-   MLS_RESO_URL=https://api.ntreis.net/reso/odata
-   MLS_OAUTH_TOKEN_URL=https://api.ntreis.net/oauth/token
-   MLS_CLIENT_ID=your_client_id
-   MLS_CLIENT_SECRET=your_client_secret
-   ```
+We researched multiple data source options for getting real estate property data:
 
-2. Update `src/mls/client.py` to implement real API calls in the `search_*` methods
+| Data Source | Status | Notes |
+|-------------|--------|-------|
+| **NTREIS/Trestle (api.cotality.com)** | Requires credentials | Production MLS API, OAuth2 auth |
+| **developer.corelogic.com** | Explored | Sandbox environment, no list price API available |
+| **Property API v2 Comparables** | Found | `https://property.corelogicapi.com/v2/properties/{clipId}/comparables` |
 
-3. Restart the server
+### CoreLogic Property API v2 - Comparables Endpoint
+
+**Primary Approach:**
+```
+GET https://property.corelogicapi.com/v2/properties/{clipId}/comparables
+```
+
+This endpoint returns a list of comparable properties for a given property (identified by CLIP - CoreLogic Integrated Property ID).
+
+**Features:**
+- Returns comparable properties around a subject property
+- Supports filtering parameters to restrict comparables by:
+  - Distance (radius)
+  - Square footage range
+  - Sale date range
+  - Property type
+
+**Authentication:** API Key required (via developer.corelogic.com)
+
+**Next Step:** Implement the CoreLogic Property API v2 client to replace the mock data.
+
+---
 
 ## 🧪 Testing
 
@@ -258,7 +277,7 @@ price-it/
 - [x] In-memory caching
 - [x] Percentile-based pricing
 - [x] Discord bot integration
-- [ ] Real NTREIS API integration
+- [ ] CoreLogic Property API v2 (Comparables endpoint)
 - [ ] WhatsApp bot
 - [ ] WeChat bot
 - [ ] Redis cache option

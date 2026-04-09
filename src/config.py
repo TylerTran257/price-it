@@ -19,9 +19,9 @@ class Settings(BaseSettings):
     cache_ttl_seconds: int = 86400  # 24 hours
     
     # MLS
-    mls_provider: str = "mock"  # mock, ntreis
-    mls_reso_url: str = ""
-    mls_oauth_token_url: str = ""
+    mls_provider: str = "mock"  # mock, ntreis, corelogic
+    mls_reso_url: str = "https://api.cotality.com/trestle/odata"
+    mls_oauth_token_url: str = "https://api.cotality.com/trestle/oidc/connect/token"
     mls_client_id: str = ""
     mls_client_secret: str = ""
     

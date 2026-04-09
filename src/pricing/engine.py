@@ -128,7 +128,7 @@ def calculate_price_range(
     }
 
 
-def apply_fallback_strategies(
+async def apply_fallback_strategies(
     mls_client,
     location,
     radius_miles: float,

@@ -37,7 +37,8 @@ async def lifespan(app: FastAPI):
     settings = get_settings()
     _cache = InMemoryCache()
     _geocoding = GeocodingService()
-    _mls_client = MLSClient(use_mock=(settings.mls_provider == "mock"))
+    use_mock = settings.mls_provider == "mock"
+    _mls_client = MLSClient(use_mock=use_mock)
     
     print(f"🚀 Price-It API starting up")
     print(f"   Environment: {settings.environment}")
